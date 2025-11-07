@@ -12,9 +12,24 @@ module rv32i_single_cpu (
     output wire [31:0] reg_wdata_out,   // Writeback data
     output wire        branch_taken_out,// Branch decision
     output wire        Jump_out,        // Jump flag
-    output wire        RegWrite_out     // Register write enable
+    output wire        RegWrite_out,     // Register write enable
+    output wire        halted_out        // halt result    
 );
 
+wire is_system_opcode = (instr[6:2] == 5'b11100); // ECALL/EBREAK/PAUSE
+wire is_fence_opcode  = (instr[6:2] == 5'b00011); // FENCE / FENCE.TSO
+
+
+// single halt condition
+wire halt_inst = is_system_opcode | is_fence_opcode;
+
+reg halted;
+always @(posedge clk or posedge rst) begin
+    if (rst)
+        halted <= 1'b0;
+    else if (halt_inst)
+        halted <= 1'b1;
+end
 
 // current PC
 wire [31:0] pc_current;
@@ -26,7 +41,7 @@ wire [31:0] pc_next;
 pc pc_reg (
     .clk(clk),
     .rst(rst),
-    .en(1'b1),
+    .en(~halted),
     .next_pc(pc_next),
     .pc_out(pc_current)
 );
@@ -217,5 +232,6 @@ assign reg_wdata_out   = regfile_wdata;
 assign branch_taken_out = branch_taken;
 assign Jump_out        = Jump;
 assign RegWrite_out    = RegWrite;
+assign halted_out = halted;
 
 endmodule
