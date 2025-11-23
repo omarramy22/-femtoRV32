@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `include "defines.v"
 
-module cpu_top (
+module cpu_top #(parameter MEMFILE = "default.mem")(
     input  wire        clk,
     input  wire        rst,
     input  wire [1:0]  ledsel,
@@ -42,7 +42,7 @@ module cpu_top (
     wire [31:0] mem_wdata = (phase == 1'b0) ? 32'b0         : mem_write_data_mem;
     wire [2:0]  mem_f3   = (phase == 1'b0) ? funct3_if     : funct3_mem;
 
-    mem u_mem(
+    mem #(.MEMFILE(MEMFILE)) u_mem(
         .clk(clk),
         .MemRead(mem_MemRead),
         .MemWrite(mem_MemWrite),

@@ -1,4 +1,5 @@
-module mem (
+module mem #(parameter MEMFILE = "default.mem")
+(
     input  wire        clk,
     input  wire        MemRead,
     input  wire        MemWrite,
@@ -16,8 +17,8 @@ module mem (
         for (i = 0; i < 4096; i = i + 1)
             mem_array[i] = 8'h00;
 
-        $readmemh("test/programs/basic_tests.mem", instr_words);
-        for (i = 0; i < 1024; i = i + 1) begin
+            $readmemh(MEMFILE, mem);        
+            for (i = 0; i < 1024; i = i + 1) begin
             mem_array[i*4 + 0] = instr_words[i][7:0];
             mem_array[i*4 + 1] = instr_words[i][15:8];
             mem_array[i*4 + 2] = instr_words[i][23:16];
