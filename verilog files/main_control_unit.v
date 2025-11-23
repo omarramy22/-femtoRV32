@@ -2,7 +2,8 @@
 `include "defines.v"
 
 module Main_Control (
-    input  wire [4:0] opcode,    
+    input  wire [4:0] opcode,
+
     output reg        Branch,
     output reg        MemRead,
     output reg        MemToReg,
@@ -10,10 +11,14 @@ module Main_Control (
     output reg        MemWrite,
     output reg        ALUSrc,
     output reg        RegWrite,
-    output reg        Jump
+    
+    output reg        Jump,      
+    output reg        JumpR      // 1 = JALR, 0 = JAL
 );
 
 always @(*) begin
+    
+    // Default (NOP)
     Branch    = 0;
     MemRead   = 0;
     MemToReg  = 0;
@@ -22,16 +27,17 @@ always @(*) begin
     ALUSrc    = 0;
     RegWrite  = 0;
     Jump      = 0;
+    JumpR     = 0;
 
     case (opcode)
         `OPCODE_Arith_R: begin
             RegWrite = 1;
-            ALUOp    = 2'b10;
+            ALUOp    = 2'b10;   
         end
 
         `OPCODE_Arith_I: begin
             RegWrite = 1;
-            ALUSrc   = 1;
+            ALUSrc   = 1;       
             ALUOp    = 2'b10;
         end
 
@@ -40,42 +46,44 @@ always @(*) begin
             ALUSrc   = 1;
             MemToReg = 1;
             MemRead  = 1;
-            ALUOp    = 2'b00;
+            ALUOp    = 2'b00;   
         end
 
         `OPCODE_Store: begin
             ALUSrc   = 1;
             MemWrite = 1;
-            ALUOp    = 2'b00;
+            ALUOp    = 2'b00;   
         end
 
         `OPCODE_Branch: begin
-            Branch   = 1;
-            ALUOp    = 2'b01;  
+            Branch = 1;
+            ALUOp  = 2'b01;     
         end
 
         `OPCODE_LUI: begin
             RegWrite = 1;
             ALUSrc   = 1;
-            ALUOp    = 2'b00;
+            ALUOp    = 2'b00;   
         end
 
         `OPCODE_AUIPC: begin
             RegWrite = 1;
             ALUSrc   = 1;
-            ALUOp    = 2'b00;
+            ALUOp    = 2'b00;   
         end
 
         `OPCODE_JAL: begin
             RegWrite = 1;
-            Jump     = 1;
-            ALUSrc   = 1;
+            Jump     = 1;       
+            JumpR    = 0;       
         end
 
         `OPCODE_JALR: begin
             RegWrite = 1;
-            Jump     = 1;
-            ALUSrc   = 1;
+            Jump     = 1;       
+            JumpR    = 1;       
+            ALUSrc   = 1;       
+            ALUOp    = 2'b00;   
         end
 
         default: begin

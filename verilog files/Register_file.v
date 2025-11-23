@@ -33,7 +33,7 @@ module register_file #(parameter N = 32) (
 );
     reg [N-1:0] regs [31:0];
     integer i;
-    always @(posedge clk or posedge rst) begin
+    always @(negedge clk or posedge rst) begin
         if (rst) begin
             for (i = 0; i < 32; i = i + 1) regs[i] <= {N{1'b0}};
         end else begin

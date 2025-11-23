@@ -24,7 +24,7 @@ wire is_fence_opcode  = (instr[6:2] == 5'b00011); // FENCE / FENCE.TSO
 wire halt_inst = is_system_opcode | is_fence_opcode;
 
 reg halted;
-always @(posedge clk or posedge rst) begin
+always @(posedge clk or posedge rst) begin 
     if (rst)
         halted <= 1'b0;
     else if (halt_inst)
